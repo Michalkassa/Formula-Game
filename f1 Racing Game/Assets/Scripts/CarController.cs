@@ -30,7 +30,7 @@ public class CarController : MonoBehaviour
 	public float[] gears = new float[numberOfGears];
 	float smoothTime = 0.01f;
 	public float radius = 6f;
-	public float maxSteerAngle= 40f;
+	public float maxSteerAngle = 40f;
 	public float brakePower;
 	public float KPH = 0f;
 	public float engineRPM;
@@ -76,7 +76,7 @@ public class CarController : MonoBehaviour
 	}
 	private void FixedUpdate()
 	{
-	
+
 		addDownForce();
 		animateWheels();
 		steerVehicle();
@@ -87,9 +87,9 @@ public class CarController : MonoBehaviour
 	}
 	void calculateEnginePower()
 	{
-		
+
 		wheelRPM();
-		totalPower = enginePower.Evaluate(engineRPM) * Mathf.Abs(IM.THROTTLE) * (gears[gearNum]); 
+		totalPower = enginePower.Evaluate(engineRPM) * Mathf.Abs(IM.THROTTLE) * (gears[gearNum]);
 		float velocity = 0.0f;
 		engineRPM = Mathf.SmoothDamp(engineRPM, minRPM + (Mathf.Abs(wheelRPMs) * (gears[gearNum])), ref velocity, smoothTime);
 		engineRPM = Mathf.Clamp(engineRPM, minRPM, maxRPM);
@@ -109,13 +109,13 @@ public class CarController : MonoBehaviour
 
 	public void shifter()
 	{
-		if(gearChange == gearBox.automatic){
+		if (gearChange == gearBox.automatic) {
 			if (gearNum == 0f)
 			{
 				gearNum++;
 				speedMeter.changeGear();
 			}
-			if(engineRPM > (maxRPM - 400) && gearNum < gears.Length - 1)
+			if (engineRPM > (maxRPM - 400) && gearNum < gears.Length - 1)
 			{
 				gearNum++;
 				speedMeter.changeGear();
@@ -142,43 +142,36 @@ public class CarController : MonoBehaviour
 	}
 	void moveVehicle()
 	{
-		
 
-		if(drive == driveType.allWheelDrive){
-			for (int i = 0; i < wheels.Length; i++)
-			{	
-				if (isReversing)
-				{
-					wheels[i].motorTorque = IM.THROTTLE * (totalPower * 1/16);
-				}
-				else
-				{
-					wheels[i].motorTorque = IM.THROTTLE * (totalPower * 1/4);
-				}
-				
-			}
-		}else if (drive == driveType.rearWheelDrive){
-			for (int i = 0; i < wheels.Length; i++)
-			{
-				
-			
-				wheels[i].motorTorque = IM.THROTTLE * (totalPower * 1/8);
-				
-				wheels[i].motorTorque = IM.THROTTLE * (totalPower * 1/2);
-			}
+
+		if (drive == driveType.allWheelDrive) {
+
+
+
+			wheels[0].motorTorque = IM.THROTTLE * (totalPower * 1 / 16);
+			wheels[1].motorTorque = IM.THROTTLE * (totalPower * 1 / 16);
+			wheels[2].motorTorque = IM.THROTTLE * (totalPower * 1 / 16);
+			wheels[3].motorTorque = IM.THROTTLE * (totalPower * 1 / 16);
+
+
+
+		} else if (drive == driveType.rearWheelDrive) {
+
+
+			wheels[2].motorTorque = IM.THROTTLE * (totalPower * 1 / 2);
+
+			wheels[3].motorTorque = IM.THROTTLE * (totalPower * 1 / 2);
+
 		}
-		else{
-			for (int i = 0; i < wheels.Length - 2; i++){
-				if (isReversing)
-				{
-					wheels[i].motorTorque = IM.THROTTLE * (totalPower * 1/8);
-				}
-				else
-				{
-					wheels[i].motorTorque = IM.THROTTLE * (totalPower * 1/2);
-				}
-			}
+		else {
+
+
+
+			wheels[0].motorTorque = IM.THROTTLE * (totalPower * 1 / 2);
+			wheels[1].motorTorque = IM.THROTTLE * (totalPower * 1 / 2);
+
 		}
+	
 
 		if (IM.HANDBRAKE){
 			wheels[0].brakeTorque = brakePower;
@@ -199,6 +192,7 @@ public class CarController : MonoBehaviour
 		
 		float currentSteerAngle;
 		currentSteerAngle = maxSteerAngle * IM.HORIZONTAL;
+		Debug.Log(currentSteerAngle);
 		wheels[0].steerAngle = currentSteerAngle; 
 		wheels[1].steerAngle = currentSteerAngle;
 
