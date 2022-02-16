@@ -39,6 +39,7 @@ public class CarController : MonoBehaviour
 	public bool isReversing = false;
 	private float wheelRPMs;
 	public float defaultFOV;
+	float currentSteerAngle;
 
 
 
@@ -52,6 +53,10 @@ public class CarController : MonoBehaviour
 	private Rigidbody rb;
 	public Transform CenterOfMass;
 
+
+	public GameObject rightWheelcover;
+	public GameObject steeringWheel;
+	public GameObject leftWheelcover;
 	private void Start()
 	{
 
@@ -76,13 +81,14 @@ public class CarController : MonoBehaviour
 	}
 	private void FixedUpdate()
 	{
-
-		addDownForce();
-		animateWheels();
 		steerVehicle();
+		addDownForce();
+		animateWheelCovers();
+		animateWheels();
 		calculateEnginePower();
 		moveVehicle();
 		shifter();
+		animateSteeringWheel();
 		KPH = rb.velocity.magnitude * 3.6f;
 	}
 	void calculateEnginePower()
@@ -148,10 +154,10 @@ public class CarController : MonoBehaviour
 
 
 
-			wheels[0].motorTorque = IM.THROTTLE * (totalPower * 1 / 16);
-			wheels[1].motorTorque = IM.THROTTLE * (totalPower * 1 / 16);
-			wheels[2].motorTorque = IM.THROTTLE * (totalPower * 1 / 16);
-			wheels[3].motorTorque = IM.THROTTLE * (totalPower * 1 / 16);
+			wheels[0].motorTorque = IM.THROTTLE * (totalPower * 1 / 4);
+			wheels[1].motorTorque = IM.THROTTLE * (totalPower * 1 / 4);
+			wheels[2].motorTorque = IM.THROTTLE * (totalPower * 1 / 4);
+			wheels[3].motorTorque = IM.THROTTLE * (totalPower * 1 / 4);
 
 
 
@@ -190,9 +196,7 @@ public class CarController : MonoBehaviour
 	private void steerVehicle()
 	{
 		
-		float currentSteerAngle;
 		currentSteerAngle = maxSteerAngle * IM.HORIZONTAL;
-		Debug.Log(currentSteerAngle);
 		wheels[0].steerAngle = currentSteerAngle; 
 		wheels[1].steerAngle = currentSteerAngle;
 
@@ -209,6 +213,14 @@ public class CarController : MonoBehaviour
 			wheelMesh[i].transform.position = wheelPosition;
 			wheelMesh[i].transform.rotation = wheelRotation;
 		}
+	
+	}
+
+	void animateWheelCovers()
+	{
+	
+		leftWheelcover.transform.localRotation = Quaternion.Euler(0, currentSteerAngle, 0);
+		rightWheelcover.transform.localRotation = Quaternion.Euler(0, currentSteerAngle, 0);
 	}
 	void GetObjects()
 	{
@@ -228,6 +240,11 @@ public class CarController : MonoBehaviour
 
 		Cam.fieldOfView = Mathf.Lerp(Cam.fieldOfView, desiredFov, Time.deltaTime * 1000);
 	
+	}
+
+	void animateSteeringWheel()
+	{
+		steeringWheel.transform.localRotation = Quaternion.Euler(0, 0, (-currentSteerAngle/ maxSteerAngle) * 180);
 	}
 
 }
